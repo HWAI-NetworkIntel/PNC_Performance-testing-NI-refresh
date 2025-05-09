@@ -36,7 +36,7 @@ async function measureTTFD(menuText, viewText, page) {
   await expect(comparisonOption).toBeVisible({ timeout: 15000 });
   await comparisonOption.click({ force: true });
 
-  
+  await page.pause()
   // ******************************** TEST CASE START ***********************************************
   //  Time taken to fully drawn (TTFD)
 

@@ -36,14 +36,13 @@ async function measureTTFD(menuText, viewText, page) {
   await expect(comparisonOption).toBeVisible({ timeout: 15000 });
   await comparisonOption.click({ force: true });
 
-  await page.pause()
+  
   // ******************************** TEST CASE START ***********************************************
   //  Time taken to fully drawn (TTFD)
-
+  
   await page.waitForSelector("#i_frame", { timeout: 20000 });
-  const frameLocator = page.frameLocator("#i_frame");
+  const frameLocator = page.frameLocator('xpath=(//iframe[contains(@src, "ni-pnc.analytics-hub.com")])[2]');
   const spinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
-
   await expect(spinner.first()).toBeVisible({ timeout: 60000 });
   await spinner.first().waitFor({ state: "detached", timeout: 60000 });
   const end = Date.now();

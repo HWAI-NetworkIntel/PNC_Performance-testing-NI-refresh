@@ -88,8 +88,6 @@ async function measureTTFD(menuText, viewText, page) {
     Time: `${filterLoadTimeThird}s`,
   });
 
-  console.log(filterLoadTimes);
-
   // ******************************** TEST CASE START ***********************************************
   // County Change > 1st 2 (Albany and Allegany)
 
@@ -131,7 +129,6 @@ async function measureTTFD(menuText, viewText, page) {
     Time: `${filterLoadTimeThird}s`,
   });
 
-  console.log(filterLoadTimes);
 
   // ******************************** TEST CASE START ***********************************************
   // Plan type Change (Local HMO to Local PPO)
@@ -169,10 +166,80 @@ async function measureTTFD(menuText, viewText, page) {
     Time: `${filterLoadTimeThird}s`,
   });
 
-  console.log(filterLoadTimes);
 
   // ******************************** TEST CASE START ***********************************************
-  // Plan type Change (Local HMO to Local PPO)
+  // SNP Plan Change (DSNP to Non SNP)
+ console.log("SNP Plan Change (DSNP to Non SNP)");
+  
+   filterDropdown = frameLocator.locator("#\\36"); // PLAN TYPE FILTER 5
+  await expect(filterDropdown).toBeVisible({ timeout: 60000 });
+
+  // Click to open the dropdown
+  await filterDropdown.click();
+
+  filterStart = Date.now();
+  // Wait for the dropdown panel to appear
+  dropdownPanel = frameLocator.locator('ul[role="listbox"]');
+  await expect(dropdownPanel).toBeVisible({ timeout: 50000 });
+
+  // Select New York from state list
+  thirdOption = dropdownPanel.locator('li[role="option"]', {
+    hasText: "Non-SNP",
+  });
+  await thirdOption.click();
+
+  filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
+
+  // Wait for spinner after selecting NY
+  await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
+  await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
+
+  filterEnd = Date.now();
+  filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
+
+  filterLoadTimes.push({
+    Scenario: "SNP Plan Change (DSNP to Non SNP)",
+    Time: `${filterLoadTimeThird}s`,
+  });
+
+
+    // ******************************** TEST CASE START ***********************************************
+  // Base PLAN Selection (H3418_004 to H3418_008)
+
+ console.log("Base PLAN Selection (H3418_004 to H3418_008)");
+  
+   filterDropdown = frameLocator.locator("#\\32\\31"); // BASE PLAN FILTER 21
+  await expect(filterDropdown).toBeVisible({ timeout: 60000 });
+
+  // Click to open the dropdown
+  await filterDropdown.click();
+
+  filterStart = Date.now();
+  // Wait for the dropdown panel to appear
+  dropdownPanel = frameLocator.locator('ul[role="listbox"]');
+  await expect(dropdownPanel).toBeVisible({ timeout: 50000 });
+
+  // Select New York from state list
+  thirdOption = dropdownPanel.locator('li[role="option"]', {
+    hasText: "AARP Medicare Advantage from UHC NY-0015 (PPO) H3418_004_0",
+  });
+  await thirdOption.click();
+
+  filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
+
+  // Wait for spinner after selecting NY
+  await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
+  await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
+
+  filterEnd = Date.now();
+  filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
+
+  filterLoadTimes.push({
+    Scenario: "Base PLAN Selection (H3418_004 to H3418_008)",
+    Time: `${filterLoadTimeThird}s`,
+  });
+
+  console.log(filterLoadTimes);
 
   await page.pause();
 

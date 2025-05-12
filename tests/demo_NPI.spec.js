@@ -11,7 +11,6 @@ const clientConfig = {
       npiSearch: "Provider Network Comparison 1-to-1",
     },
   },
- 
 };
 
 async function measureTTFD(menuText, viewText, page) {
@@ -36,12 +35,11 @@ async function measureTTFD(menuText, viewText, page) {
   await expect(comparisonOption).toBeVisible({ timeout: 15000 });
   await comparisonOption.click({ force: true });
 
-  
   // ******************************** TEST CASE START ***********************************************
   //  Time taken to fully drawn (TTFD)
-  
+
   await page.waitForSelector("#i_frame", { timeout: 20000 });
-  const frameLocator = page.frameLocator('xpath=(//iframe[contains(@src, "ni-pnc.analytics-hub.com")])[2]');
+  const frameLocator = page.frameLocator('iframe[title="dashboard"]').first();
   const spinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
   await expect(spinner.first()).toBeVisible({ timeout: 60000 });
   await spinner.first().waitFor({ state: "detached", timeout: 60000 });
@@ -56,13 +54,8 @@ async function measureTTFD(menuText, viewText, page) {
     },
   ];
 
-
-  
-  
   // ******************************** TEST CASE START ***********************************************
   // State change Arizona to New York
-
-  
 
   let filterDropdown = frameLocator.locator("#\\33"); // STATE FILTER 3
   await expect(filterDropdown).toBeVisible({ timeout: 60000 });
@@ -88,68 +81,104 @@ async function measureTTFD(menuText, viewText, page) {
   await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
 
   let filterEnd = Date.now();
-  const filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
- 
+  let filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
 
   filterLoadTimes.push({
     Scenario: "State change Arizona to New York",
     Time: `${filterLoadTimeThird}s`,
   });
 
-  console.log(filterLoadTimes)
-  
+  console.log(filterLoadTimes);
 
-
-
-    
   // ******************************** TEST CASE START ***********************************************
   // County Change > 1st 2 (Albany and Allegany)
 
-// More reliable way to locate the filter dropdown
- filterDropdown = frameLocator.locator('.p-multiselect').first(); // or a more specific selector
-await expect(filterDropdown).toBeVisible({ timeout: 60000 });
+  // More reliable way to locate the filter dropdown
+  filterDropdown = frameLocator.locator(".p-multiselect").first(); // or a more specific selector
+  await expect(filterDropdown).toBeVisible({ timeout: 60000 });
 
-// Click to open the dropdown
-await filterDropdown.click();
+  // Click to open the dropdown
+  await filterDropdown.click();
 
- filterStart = Date.now();
+  filterStart = Date.now();
 
-// Wait for the dropdown panel to appear - more specific selector
- dropdownPanel = frameLocator.locator('.p-multiselect-panel');
-await expect(dropdownPanel).toBeVisible({ timeout: 50000 });
+  // Wait for the dropdown panel to appear - more specific selector
+  dropdownPanel = frameLocator.locator(".p-multiselect-panel");
+  await expect(dropdownPanel).toBeVisible({ timeout: 50000 });
 
-// Better way to select "New York" option
-const optionText = "New York";
-const optionSelector = `li.p-multiselect-item:has-text("${optionText}")`;
+  // Better way to select "New York" option
+  let optionText = "New York";
+  let optionSelector = `li.p-multiselect-item:has-text("${optionText}")`;
 
-// Wait for the option to be available
-await frameLocator.locator(optionSelector).waitFor({ state: 'visible', timeout: 30000 });
+  // Wait for the option to be available
+  await frameLocator
+    .locator(optionSelector)
+    .waitFor({ state: "visible", timeout: 30000 });
 
-// Click the option
-await frameLocator.locator(optionSelector).click();
+  // Click the option
+  await frameLocator.locator(optionSelector).click();
 
-// Handle spinner
- filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
-await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
-await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
+  // Handle spinner
+  filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
+  await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
+  await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
 
-filterEnd = Date.now();
-filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
+  filterEnd = Date.now();
+  filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
 
-filterLoadTimes.push({
-  Scenario: "State change Arizona to New York",
-  Time: `${filterLoadTimeThird}s`,
-});
+  filterLoadTimes.push({
+    Scenario: "County Change > 1st 2 (Albany and Allegany)",
+    Time: `${filterLoadTimeThird}s`,
+  });
 
-console.log(filterLoadTimes);
+  console.log(filterLoadTimes);
 
+  // ******************************** TEST CASE START ***********************************************
+  // Plan type Change (Local HMO to Local PPO)
 
-await page.pause()
+  console.log("Plan type Change (Local HMO to Local PPO)");
+  
+   filterDropdown = frameLocator.locator("#\\35"); // PLAN TYPE FILTER 5
+  await expect(filterDropdown).toBeVisible({ timeout: 60000 });
 
-// ************************************** // END OF TEST CASES  *************************************************
+  // Click to open the dropdown
+  await filterDropdown.click();
 
+  filterStart = Date.now();
+  // Wait for the dropdown panel to appear
+  dropdownPanel = frameLocator.locator('ul[role="listbox"]');
+  await expect(dropdownPanel).toBeVisible({ timeout: 50000 });
 
-// **************************************  START OF CUSTOM RESULT ***********************************************
+  // Select New York from state list
+  thirdOption = dropdownPanel.locator('li[role="option"]', {
+    hasText: "Local PPO",
+  });
+  await thirdOption.click();
+
+  filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
+
+  // Wait for spinner after selecting NY
+  await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
+  await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
+
+  filterEnd = Date.now();
+  filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
+
+  filterLoadTimes.push({
+    Scenario: "Plan type Change (Local HMO to Local PPO)",
+    Time: `${filterLoadTimeThird}s`,
+  });
+
+  console.log(filterLoadTimes);
+
+  // ******************************** TEST CASE START ***********************************************
+  // Plan type Change (Local HMO to Local PPO)
+
+  await page.pause();
+
+  // ************************************** // END OF TEST CASES  *************************************************
+
+  // **************************************  START OF CUSTOM RESULT ***********************************************
 
   // // Custom log format like in your attachment
   // console.log("\nCustom Table:");
@@ -158,8 +187,7 @@ await page.pause()
   //   console.log(`${row.Scenario.padEnd(45)}${row.Time}`);
   // }
 
-    // **************************************  END OF CUSTOM RESULT ************************************************
-
+  // **************************************  END OF CUSTOM RESULT ************************************************
 
   // 11. Pause for manual inspection
 
@@ -174,7 +202,7 @@ test("Login and measure TTFD for multiple clients with Excel Output", async ({
   const loginUrl = "https://hwai.analytics-hub.com/login";
   const username = "vibhore.goel@teganalytics.com";
   const password = "Goteg@123";
-  
+
   // Get all clients from config
   const clients = Object.keys(clientConfig);
 
@@ -217,7 +245,7 @@ test("Login and measure TTFD for multiple clients with Excel Output", async ({
   for (const client of clients) {
     const config = clientConfig[client];
     const { menuText, views } = config;
-    
+
     // Skip clients without npiSearch view
     if (!views?.npiSearch) {
       console.log(`ℹ️ Skipping ${client} - no npiSearch view configured`);
@@ -228,9 +256,8 @@ test("Login and measure TTFD for multiple clients with Excel Output", async ({
 
     // Switch client if not Demo
 
-    
     if (client !== "Demo") {
-      console.log("clientclientclient",client);
+      console.log("clientclientclient", client);
       const clientDropdownButton = page.locator("button#options-menu");
       await expect(clientDropdownButton).toBeVisible({ timeout: 10000 });
       await clientDropdownButton.click();
@@ -250,35 +277,39 @@ test("Login and measure TTFD for multiple clients with Excel Output", async ({
 
     // Run tests and add to Excel workbook
     try {
-      const filterLoadTimes = await measureTTFD(menuText, views.npiSearch, page);
-      
+      const filterLoadTimes = await measureTTFD(
+        menuText,
+        views.npiSearch,
+        page
+      );
+
       // Add a worksheet for the current client
       const worksheet = workbook.addWorksheet(client);
 
       // Add headers with styling
       worksheet.columns = [
-        { header: 'Scenario', key: 'Scenario', width: 60 },
-        { header: 'Time', key: 'Time', width: 15 },
-        { header: 'Run Time', key: 'RunTime', width: 20 }
+        { header: "Scenario", key: "Scenario", width: 60 },
+        { header: "Time", key: "Time", width: 15 },
+        { header: "Run Time", key: "RunTime", width: 20 },
       ];
 
       // Style the header row
-      worksheet.getRow(1).eachCell(cell => {
+      worksheet.getRow(1).eachCell((cell) => {
         cell.font = { bold: true };
         cell.fill = {
-          type: 'pattern',
-          pattern: 'solid',
-          fgColor: { argb: 'FFD3D3D3' }
+          type: "pattern",
+          pattern: "solid",
+          fgColor: { argb: "FFD3D3D3" },
         };
-        cell.alignment = { vertical: 'middle', horizontal: 'center' };
+        cell.alignment = { vertical: "middle", horizontal: "center" };
       });
 
       // Add data rows
-      filterLoadTimes.forEach(row => {
+      filterLoadTimes.forEach((row) => {
         worksheet.addRow({
           Scenario: row.Scenario,
           Time: row.Time,
-          RunTime: estTime
+          RunTime: estTime,
         });
       });
 
@@ -292,6 +323,3 @@ test("Login and measure TTFD for multiple clients with Excel Output", async ({
   await workbook.xlsx.writeFile(filePath);
   console.log(`\nAll results saved to ${filePath}`);
 });
-
-
-

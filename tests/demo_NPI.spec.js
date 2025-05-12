@@ -241,6 +241,70 @@ async function measureTTFD(menuText, viewText, page) {
 
   console.log(filterLoadTimes);
 
+      // ******************************** TEST CASE START ***********************************************
+  // Comparison PLan Selection (H2775_105 to H2775_106)
+
+ console.log("Comparison PLan Selection (H2775_105 to H2775_106)");
+  
+   filterDropdown = frameLocator.locator("#\\32\\32"); // BASE PLAN FILTER 21
+  await expect(filterDropdown).toBeVisible({ timeout: 60000 });
+
+  // Click to open the dropdown
+  await filterDropdown.click();
+
+  filterStart = Date.now();
+  // Wait for the dropdown panel to appear
+  dropdownPanel = frameLocator.locator('ul[role="listbox"]');
+  await expect(dropdownPanel).toBeVisible({ timeout: 50000 });
+
+  // Select New York from state list
+  thirdOption = dropdownPanel.locator('li[role="option"]', {
+    hasText: "Wellcare Premium Ultra Open (PPO) H2775_105_0",
+  });
+  await thirdOption.click();
+
+  filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
+
+  // Wait for spinner after selecting NY
+  await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
+  await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
+
+  filterEnd = Date.now();
+  filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
+
+  filterLoadTimes.push({
+    Scenario: "Comparison PLan Selection (H2775_105 to H2775_106)",
+    Time: `${filterLoadTimeThird}s`,
+  });
+
+  console.log(filterLoadTimes);
+
+  // ******************************** TEST CASE START ***********************************************
+  // 4 stars and up
+
+  // Select the "4 stars & up" radio button
+  const fourStarsRadio = frameLocator.locator('label.ant-radio-button-wrapper span', {
+    hasText: '4 stars & up',
+  });
+  await expect(fourStarsRadio).toBeVisible({ timeout: 10000 });
+  await fourStarsRadio.click();
+
+  filterSpinner = frameLocator.locator(".ant-spin.ant-spin-spinning");
+
+  // Wait for spinner after selecting NY
+  await expect(filterSpinner.first()).toBeVisible({ timeout: 60000 });
+  await filterSpinner.first().waitFor({ state: "detached", timeout: 60000 });
+
+  filterEnd = Date.now();
+  filterLoadTimeThird = ((filterEnd - filterStart) / 1000).toFixed(1);
+
+  filterLoadTimes.push({
+    Scenario: "4 stars & up",
+    Time: `${filterLoadTimeThird}s`,
+  });
+
+  console.log(filterLoadTimes);
+  
   await page.pause();
 
   // ************************************** // END OF TEST CASES  *************************************************
